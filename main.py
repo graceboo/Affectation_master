@@ -279,3 +279,93 @@ ax.set_ylabel("temps d'execution ")
 plt.title("courbe des temps d'execution ")
 plt.show()
 
+def Borda_scores(pref) :
+    nb_colonnes = len(pref[0])
+    nb_lignes = len(pref)
+    classement = [[-1] * nb_colonnes for _ in range(nb_lignes)]
+
+    for i in range(nb_lignes):
+        for j in range(nb_colonnes):
+            idx_parcours = pref[i][j]
+            classement[i][idx_parcours] = nb_colonnes - (j + 1)   
+    return classement
+
+def fichier_lp_kpremiers(pref_etudiants, pref_parcours,capacites, k=3) :
+
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+    with open("probleme_equitable.lp", "w") as f:
+        # Déclaration de l'objectif : maximiser les affectations
+        f.write("Maximize\n")
+        f.write("obj: ")
+
+         # Variables de décision : X[i][j] : l'étudiant i est affecté au parcours j
+        variables = []
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                variables.append(f"x{i}_{j}")
+
+        f.write(" + ".join(variables) + "\n") # on maximise le nombre d'affectations
+        f.write("Subject To\n")
+
+        # Chaque étudiant est associé à un seul parcours
+        for i in range(nb_etudiants) :
+            f.write(f"constr_affectation_{i}: ")
+            f.write(" + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + f" = 1\n")
+
+        for j in range(nb_parcours) :
+            f.write(f"constr_capacite_{j}: ")
+            f.write(" + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
+        
+        for i in range(nb_etudiants) :
+            f.write(f"constr_kpremiers_{i}: ")
+            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k)]) + f" <= 1\n")
+
+            f.write(f"constr_derniers_{i}: ")
+            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k,nb_parcours)]) + f" = 0\n")
+    
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                f.write(f"x{i}_{j}\n")
+
+        # Fin du fichier LP
+        f.write("End\n")
+def fichier_lp_efficace(pref_etudiants, pref_parcours,capacites, k=3) :
+
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+    scores_parcours = Borda_scores(pref_parcours)
+    scores_etudiants = Borda_scores(pref_etudiants)
+    with open("probleme_efficace.lp", "w") as f:
+        # Déclaration de l'objectif : maximiser les affectations
+        f.write("Maximize\n")
+        f.write("obj: ")
+
+         # Variables de décision : X[i][j] : l'étudiant i est affecté au parcours j
+        variables = []
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                variables.append(f"{scores_etudiants[i][j] + scores_parcours[j][i]} x{i}_{j}")
+
+        f.write(" + ".join(variables) + "\n") # on maximise le nombre d'affectations
+        f.write("Subject To\n")
+
+        # Chaque étudiant est associé à un seul parcours
+        for i in range(nb_etudiants) :
+            f.write(f"constr_affectation_{i}: ")
+            f.write(" + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + f" = 1\n")
+
+        for j in range(nb_parcours) :
+            f.write(f"constr_capacite_{j}: ")
+            f.write(" + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
+    
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                f.write(f"x{i}_{j}\n")
+
+        # Fin du fichier LP
+        f.write("End\n")
+fichier_lp_kpremiers(pref_etudiants, pref_parcours, capacites)
+fichier_lp_efficace(pref_etudiants,pref_parcours,capacites)
