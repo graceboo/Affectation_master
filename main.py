@@ -367,5 +367,49 @@ def fichier_lp_efficace(pref_etudiants, pref_parcours,capacites, k=3) :
 
         # Fin du fichier LP
         f.write("End\n")
+
+def fichier_lp(pref_etudiants, pref_parcours, capacites, k_star):
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+
+    scores_parcours = Borda_scores(pref_parcours)
+    scores_etudiants = Borda_scores(pref_etudiants)
+
+    with open("probleme_utilite.lp", "w") as f:
+        # Déclaration de l'objectif : maximiser la somme des utilités
+        f.write("Maximize\n")
+        f.write("obj: ")
+
+        variables = []
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                score = scores_etudiants[i][j] + scores_parcours[j][i]
+                variables.append(f"{score} x{i}_{j}")
+
+        f.write(" + ".join(variables) + "\n")
+        f.write("Subject To\n")
+
+        # Chaque étudiant est associé à un seul parcours
+        for i in range(nb_etudiants):
+            f.write(f"constr_affectation_{i}: ")
+            f.write(" + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + " = 1\n")
+
+        # Respect des capacités des parcours
+        for j in range(nb_parcours):
+            f.write(f"constr_capacite_{j}: ")
+            f.write(" + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
+
+        # Contrainte : chaque étudiant est affecté à un de ses k* premiers choix
+        for i in range(nb_etudiants):
+            f.write(f"constr_kpremiers_{i}: ")
+            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k_star)]) + " = 1\n")
+
+        # Déclaration des variables binaires
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                f.write(f"x{i}_{j}\n")
+
+        f.write("End\n")
 fichier_lp_kpremiers(pref_etudiants, pref_parcours, capacites)
 fichier_lp_efficace(pref_etudiants,pref_parcours,capacites)
