@@ -267,3 +267,403 @@ Best objective -, best bound -, gap -
 
 Unable to retrieve attribute 'X'
 
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 12:50:38 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_equitable.lp
+Reading time = 0.00 seconds
+: 31 rows, 99 columns, 253 nonzeros
+Optimize a model with 31 rows, 99 columns and 253 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 9.0000000
+Presolve removed 11 rows and 0 columns
+Presolve time: 0.00s
+Presolved: 20 rows, 99 columns, 198 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+
+Root relaxation: objective 1.100000e+01, 18 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0      11.0000000   11.00000  0.00%     -    0s
+
+Explored 0 nodes (18 simplex iterations) in 0.01 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 2: 11 9 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.100000000000e+01, best bound 1.100000000000e+01, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 12:54:47 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_equitable.lp
+Reading time = 0.00 seconds
+: 42 rows, 99 columns, 297 nonzeros
+Optimize a model with 42 rows, 99 columns and 297 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Presolve removed 25 rows and 59 columns
+Presolve time: 0.00s
+Presolved: 17 rows, 40 columns, 80 nonzeros
+Variable types: 0 continuous, 40 integer (40 binary)
+
+Root relaxation: infeasible, 18 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 infeasible    0               - infeasible      -     -    0s
+
+Explored 0 nodes (18 simplex iterations) in 0.01 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Unable to retrieve attribute 'X'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 12:55:13 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_equitable.lp
+Reading time = 0.00 seconds
+: 42 rows, 99 columns, 297 nonzeros
+Optimize a model with 42 rows, 99 columns and 297 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 11.0000000
+Presolve removed 24 rows and 49 columns
+Presolve time: 0.00s
+Presolved: 18 rows, 50 columns, 100 nonzeros
+Variable types: 0 continuous, 50 integer (50 binary)
+
+Root relaxation: cutoff, 0 iterations, 0.00 seconds
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 1: 11 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.100000000000e+01, best bound 1.100000000000e+01, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:15:54 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Error reading LP format file probleme_equitable.lp at line 24
+Token contains more than 255 characters
+Neighboring tokens: " Binary x0_0x0_1x0_2x0_3x0_4x0_5x0_6x0_7x0_8x1_0x1_1x1_2x1_3x1_4x1_5x1_6x1_7x1_8x2_0x2_1x2_2x2_3x2_4x2_5x2_6x2_7x2_8x3_0x3_1x3_2x3_3x3_4x3_5x3_6x3_7x3_8x4_0x4_1x4_2x4_3x4_4x4_5x4_6x4_7x4_8x5_0x5_1x5_2x5_3x5_4x5_5x5_6x5_7x5_8x6_0x6_1x6_2x6_3x6_4x6_5x6_6x6_7x6_8x7_0 "
+
+
+ERROR 10012: Unable to read file
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:16:33 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_equitable.lp
+Reading time = 0.00 seconds
+: 20 rows, 99 columns, 154 nonzeros
+Optimize a model with 20 rows, 99 columns and 154 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 11.0000000
+Presolve removed 2 rows and 49 columns
+Presolve time: 0.00s
+Presolved: 18 rows, 50 columns, 100 nonzeros
+Variable types: 0 continuous, 50 integer (50 binary)
+
+Root relaxation: cutoff, 0 iterations, 0.00 seconds
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 1: 11 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.100000000000e+01, best bound 1.100000000000e+01, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:24:51 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Error reading LP format file probleme_equitable.lp at line 3
+Incomplete constraint
+
+
+ERROR 10012: Unable to read file
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:25:58 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_equitable.lp
+Reading time = 0.00 seconds
+: 20 rows, 99 columns, 99 nonzeros
+Optimize a model with 20 rows, 99 columns and 99 nonzeros
+Variable types: 44 continuous, 55 integer (55 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 11.0000000
+Presolve removed 20 rows and 99 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 24 available processors)
+
+Solution count 1: 11 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.100000000000e+01, best bound 1.100000000000e+01, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:27:52 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_equitable.lp
+Reading time = 0.00 seconds
+: 20 rows, 55 columns, 110 nonzeros
+Optimize a model with 20 rows, 55 columns and 110 nonzeros
+Variable types: 0 continuous, 55 integer (55 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 11.0000000
+Presolve removed 2 rows and 5 columns
+Presolve time: 0.00s
+Presolved: 18 rows, 50 columns, 100 nonzeros
+Variable types: 0 continuous, 50 integer (50 binary)
+
+Root relaxation: cutoff, 0 iterations, 0.00 seconds
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 1: 11 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.100000000000e+01, best bound 1.100000000000e+01, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:31:49 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_efficace.lp
+Reading time = 0.00 seconds
+: 20 rows, 99 columns, 198 nonzeros
+Optimize a model with 20 rows, 99 columns and 198 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e+00, 2e+01]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 87.0000000
+Presolve time: 0.00s
+Presolved: 20 rows, 99 columns, 198 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+
+Root relaxation: objective 1.560000e+02, 8 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0     156.0000000  156.00000  0.00%     -    0s
+
+Explored 0 nodes (8 simplex iterations) in 0.01 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 2: 156 87 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.560000000000e+02, best bound 1.560000000000e+02, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:52:35 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_efficace.lp
+Reading time = 0.00 seconds
+: 20 rows, 99 columns, 198 nonzeros
+Optimize a model with 20 rows, 99 columns and 198 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e+00, 2e+01]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 87.0000000
+Presolve time: 0.00s
+Presolved: 20 rows, 99 columns, 198 nonzeros
+Variable types: 0 continuous, 99 integer (99 binary)
+
+Root relaxation: objective 1.560000e+02, 8 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0     156.0000000  156.00000  0.00%     -    0s
+
+Explored 0 nodes (8 simplex iterations) in 0.01 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 2: 156 87 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.560000000000e+02, best bound 1.560000000000e+02, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:52:53 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_utilite.lp
+Reading time = 0.00 seconds
+: 20 rows, 55 columns, 110 nonzeros
+Optimize a model with 20 rows, 55 columns and 110 nonzeros
+Variable types: 0 continuous, 55 integer (55 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e+00, 2e+01]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 112.0000000
+Presolve removed 2 rows and 5 columns
+Presolve time: 0.00s
+Presolved: 18 rows, 50 columns, 100 nonzeros
+Variable types: 0 continuous, 50 integer (50 binary)
+
+Root relaxation: objective 1.260000e+02, 16 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0     126.0000000  126.00000  0.00%     -    0s
+
+Explored 0 nodes (16 simplex iterations) in 0.01 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 2: 126 112 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.260000000000e+02, best bound 1.260000000000e+02, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
+
+Gurobi 8.0.1 (linux64) logging started Mon Feb 10 13:53:38 2025
+
+
+Gurobi Optimizer version 8.0.1 build v8.0.1rc0 (linux64)
+Copyright (c) 2018, Gurobi Optimization, LLC
+
+Read LP format model from file probleme_utilite.lp
+Reading time = 0.00 seconds
+: 20 rows, 66 columns, 132 nonzeros
+Optimize a model with 20 rows, 66 columns and 132 nonzeros
+Variable types: 0 continuous, 66 integer (66 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e+00, 2e+01]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+00]
+Found heuristic solution: objective 112.0000000
+Presolve time: 0.00s
+Presolved: 20 rows, 66 columns, 132 nonzeros
+Variable types: 0 continuous, 66 integer (66 binary)
+
+Root relaxation: objective 1.380000e+02, 17 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0     138.0000000  138.00000  0.00%     -    0s
+
+Explored 0 nodes (17 simplex iterations) in 0.01 seconds
+Thread count was 24 (of 24 available processors)
+
+Solution count 2: 138 112 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.380000000000e+02, best bound 1.380000000000e+02, gap 0.0000%
+
+Wrote result file 'affectation.sol'
+
