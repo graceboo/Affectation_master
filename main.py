@@ -212,9 +212,11 @@ print("les paires instables retournées avec coté parcours : ",paires_instables
 
 valeurs_X = []
 valeurs_Y = []
+valeurs_Y1 = []
 for i in range(200,2001,200):
     valeurs_X.append(i)
     tab=[]
+    tab1=[]
     for j in range(10):
         p = pref_alea_parcours(i)
         e = pref_alea_etudiants(i)
@@ -233,49 +235,26 @@ for i in range(200,2001,200):
         gale_shapley_hopitaux_etudiants(etudiants, parcours,e, p,capacites_list)
         end_start=time.process_time()
         tab.append(end_start-start_time)
-    moy = np.mean(np.array(tab))
-    valeurs_Y.append(moy)
-    print("Pour n = ",i," le temps moyen est de : ",moy )
-    
-fig , ax = plt.subplots()
-ax.plot(valeurs_X,valeurs_Y)
-ax.set_xlabel("nombre d'étudiants")
-ax.set_ylabel("temps d'execution ")
-plt.title("courbe des temps d'execution ")
-plt.show()
 
-
-
-valeurs_X = []
-valeurs_Y = []
-for i in range(200,2001,200):
-    valeurs_X.append(i)
-    tab=[]
-    for j in range(10):
-        p=pref_alea_parcours(i)
-        e=pref_alea_etudiants(i)
-        etudiants=list(range(len(e)))
-        parcours=list(range(9))
-         # Calcul des capacités approximatives
-        capacites_list = [i // 9] * 9  # Répartition égale des étudiants
-
-        # Ajuster la capacité pour que la somme soit égale au nombre total d'étudiants
-        reste =  i % 9
-        for j in range(reste):
-            capacites_list[j] += 1
-        
-        start_time=time.process_time()
+        start_time1 =time.process_time()
         gale_shapley_hopitaux_parcours(etudiants, parcours,e, p,capacites_list)
-        end_start = time.process_time()
-        tab.append(end_start-start_time)
+        end_start1 = time.process_time()
+        tab1.append(end_start1-start_time1)
+
     moy = np.mean(np.array(tab))
     valeurs_Y.append(moy)
     print("Pour n = ",i," le temps moyen est de : ",moy )
+    moy1 = np.mean(np.array(tab1))
+    valeurs_Y1.append(moy1)
+    print("Pour n = ",i," le temps moyen est de : ",moy1 )
+
     
-fig , ax = plt.subplots()
-ax.plot(valeurs_X,valeurs_Y)
-ax.set_xlabel("nombre d'étudiants")
-ax.set_ylabel("temps d'execution ")
+
+plt.plot(valeurs_X,valeurs_Y,label="côté étudiant", color="red")
+plt.plot(valeurs_X,valeurs_Y1,label="côté parcours", color="blue")
+plt.xlabel("nb étudiants")
+plt.ylabel("temps d'exécution")
+plt.legend()
 plt.title("courbe des temps d'execution ")
 plt.show()
 
@@ -297,7 +276,6 @@ def fichier_lp_kpremiers(pref_etudiants, pref_parcours,capacites, k=3) :
     with open("probleme_equitable.lp", "w") as f:
         # Déclaration de l'objectif : maximiser les affectations
         f.write("Maximize\n")
-        f.write("obj: ")
 
          # Variables de décision : X[i][j] : l'étudiant i est affecté au parcours j
         variables = []
@@ -340,7 +318,6 @@ def fichier_lp_efficace(pref_etudiants, pref_parcours,capacites, k=3) :
     with open("probleme_efficace.lp", "w") as f:
         # Déclaration de l'objectif : maximiser les affectations
         f.write("Maximize\n")
-        f.write("obj: ")
 
          # Variables de décision : X[i][j] : l'étudiant i est affecté au parcours j
         variables = []
@@ -378,7 +355,6 @@ def fichier_lp(pref_etudiants, pref_parcours, capacites, k_star):
     with open("probleme_utilite.lp", "w") as f:
         # Déclaration de l'objectif : maximiser la somme des utilités
         f.write("Maximize\n")
-        f.write("obj: ")
 
         variables = []
         for i in range(nb_etudiants):
@@ -411,6 +387,6 @@ def fichier_lp(pref_etudiants, pref_parcours, capacites, k_star):
                 f.write(f"x{i}_{j} ")
 
         f.write("\nEnd")
-fichier_lp_kpremiers(pref_etudiants, pref_parcours, capacites)
+fichier_lp_kpremiers(pref_etudiants, pref_parcours, capacites,4)
 fichier_lp_efficace(pref_etudiants,pref_parcours,capacites)
 fichier_lp(pref_etudiants,pref_parcours,capacites,4)
