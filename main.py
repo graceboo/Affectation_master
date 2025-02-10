@@ -327,10 +327,10 @@ def fichier_lp_kpremiers(pref_etudiants, pref_parcours,capacites, k=3) :
         f.write("Binary\n")
         for i in range(nb_etudiants):
             for j in range(nb_parcours):
-                f.write(f"x{i}_{j}\n")
+                f.write(f"x{i}_{j} ")
 
         # Fin du fichier LP
-        f.write("End\n")
+        f.write("\nEnd")
 def fichier_lp_efficace(pref_etudiants, pref_parcours,capacites, k=3) :
 
     nb_etudiants = len(pref_etudiants)
@@ -363,10 +363,10 @@ def fichier_lp_efficace(pref_etudiants, pref_parcours,capacites, k=3) :
         f.write("Binary\n")
         for i in range(nb_etudiants):
             for j in range(nb_parcours):
-                f.write(f"x{i}_{j}\n")
+                f.write(f"x{i}_{j} ")
 
         # Fin du fichier LP
-        f.write("End\n")
+        f.write("\nEnd")
 
 def fichier_lp(pref_etudiants, pref_parcours, capacites, k_star):
     nb_etudiants = len(pref_etudiants)
@@ -408,8 +408,9 @@ def fichier_lp(pref_etudiants, pref_parcours, capacites, k_star):
         f.write("Binary\n")
         for i in range(nb_etudiants):
             for j in range(nb_parcours):
-                f.write(f"x{i}_{j}\n")
+                f.write(f"x{i}_{j} ")
 
-        f.write("End\n")
+        f.write("\nEnd")
 fichier_lp_kpremiers(pref_etudiants, pref_parcours, capacites)
 fichier_lp_efficace(pref_etudiants,pref_parcours,capacites)
+fichier_lp(pref_etudiants,pref_parcours,capacites,4)
