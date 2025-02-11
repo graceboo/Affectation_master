@@ -366,56 +366,7 @@ def fichier_lp_equitable(nom_fichier, pref_etudiants, pref_parcours, capacites):
         # Fin du fichier LP
         f.write("End\n")
 
-def fichier_lp_efficace_equitable(nom_fichier, pref_etudiants, pref_parcours, capacites):
-    nb_etudiants = len(pref_etudiants)
-    nb_parcours = len(pref_parcours)
-    
-    scores_parcours = Borda_scores(pref_parcours)
-    scores_etudiants = Borda_scores(pref_etudiants)
-    
-    with open(nom_fichier, "w") as f:
-        # Déclaration de l'objectif : maximiser la somme des utilités tout en assurant l'équité
-        f.write("Maximize\n")
-        
-        variables = []
-        for i in range(nb_etudiants):
-            for j in range(nb_parcours):
-                score = scores_etudiants[i][j] + scores_parcours[j][i]
-                variables.append(f"{score} x{i}_{j}")
-        
-        f.write(" + ".join(variables) )
-        
-        # Déclaration de la variable d'équité (minimum des utilités des étudiants)
-        f.write(" + z\n")
-        
-        # Contraintes
-        f.write("Subject To\n")
-        
-        # Contrainte : chaque étudiant est affecté à un seul parcours
-        for i in range(nb_etudiants):
-            f.write(f" constr_affectation_{i}: " + " + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + " = 1\n")
-        
-        # Contrainte : respect des capacités des parcours
-        for j in range(nb_parcours):
-            f.write(f" constr_capacite_{j}: " + " + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
-        
-        # Contrainte : garantir un minimum d'utilité pour chaque étudiant
-        for i in range(nb_etudiants):
-            f.write(f" constr_utilite_{i}: " + " + ".join([f"{scores_etudiants[i][j]} x{i}_{j}" for j in range(nb_parcours)]) + " - z >= 0\n")
-        
-        # Déclaration des variables binaires
-        f.write("Binary\n")
-        for i in range(nb_etudiants):
-            for j in range(nb_parcours):
-                f.write(f"x{i}_{j} ")
-        f.write("\n")
-        
-        # Déclaration de la variable d'équité comme entière
-        f.write("General\n")
-        f.write("z\n")
-        
-        # Fin du fichier LP
-        f.write("End\n")
+
 def fichier_lp_kpremiers_efficace(nom_fichier, pref_etudiants, pref_parcours, capacites, k):
     nb_etudiants = len(pref_etudiants)
     nb_parcours = len(pref_parcours)
@@ -428,19 +379,25 @@ def fichier_lp_kpremiers_efficace(nom_fichier, pref_etudiants, pref_parcours, ca
         f.write(" + ".join(variables) + "\n")
         f.write("Subject To\n")
 
-        for i in range(nb_etudiants):
-            f.write(f"constr_affectation_{i}: ")
-            f.write(" + ".join([f"x{i}_{j}" for j in range(k)]) + " = 1\n")
-
         for j in range(nb_parcours):
             f.write(f"constr_capacite_{j}: ")
-            f.write(" + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
+            c = " + ".join([f"x{i}_{j}" for i in range(nb_etudiants) ])
+            if c:
+                f.write(c + f" <= {capacites[j]}\n")
 
+        for i in range(nb_etudiants):
+            f.write(f"constr_kpremiers_{i}: ")
+            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k)]) + " = 1\n")
+        
+        # Déclaration des variables binaires
         f.write("Binary\n")
         for i in range(nb_etudiants):
             for j in range(nb_parcours):
                 f.write(f"x{i}_{j} ")
-        f.write("\nEnd")
+        f.write("\n")
+        # Fin du fichier LP
+        f.write("End\n")
+
 
 
 # Appels avec noms de fichiers
@@ -451,5 +408,4 @@ print(Borda_scores(pref_parcours))
 fichier_lp_kpremiers("probleme_kpremiers.lp", pref_etudiants, pref_parcours, capacites, 5)
 fichier_lp_efficace("probleme_efficace.lp", pref_etudiants, pref_parcours, capacites)
 fichier_lp_equitable("probleme_equitable.lp", pref_etudiants, pref_parcours, capacites)
-fichier_lp_efficace_equitable("probleme_utilitariste_egalitariste.lp", pref_etudiants, pref_parcours, capacites)
 fichier_lp_kpremiers_efficace("kpremier_efficace.lp", pref_etudiants, pref_parcours, capacites, 5)
