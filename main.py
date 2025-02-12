@@ -10,7 +10,7 @@ print(maListe)
 print(len(maListe)) #Longueur de la liste.
 exemple.createFichierLP(maListe[0][0],int(maListe[1][0])) #Methode int(): transforme la chaine de caracteres en entier
 
-
+#Q1
 def lire_PrefEtu(name_f):
     file = open(name_f,"r")
     contenu = file.readlines() 
@@ -42,7 +42,7 @@ def lire_PrefSpe(name_f):
         classement.append(liste)
 
     return classement,capacites
-
+#Q3
 def gale_shapley_hopitaux_etudiants(etudiants, parcours, pref_etudiants, pref_parcours, capacites):
     libres = list(etudiants)  # Pile pour les étudiants libres
     propositions = [0] * len(etudiants)  # Index des prochaines propositions pour chaque étudiant
@@ -86,7 +86,7 @@ def gale_shapley_hopitaux_etudiants(etudiants, parcours, pref_etudiants, pref_pa
 
     return affectations
 
-
+#Q4
 def gale_shapley_hopitaux_parcours(etudiants, parcours, pref_etudiants, pref_parcours, capacites):
     libres = list(parcours)  # Pile pour les parcours libres
     propositions = [0] * len(parcours)  # Index des prochaines propositions pour chaque parcours
@@ -138,7 +138,7 @@ def gale_shapley_hopitaux_parcours(etudiants, parcours, pref_etudiants, pref_par
         resultat[p].append(etu)
 
     return resultat
-
+#Q6
 def mieux_classe_e(e1, e2, p,pref_parcours ):
         """Vérifie si e1 est mieux classé que e2 dans pref_parcours[p]."""
         return pref_parcours[p].index(e1) < pref_parcours[p].index(e2)
@@ -161,6 +161,7 @@ def paires_instables(affectations,pref_etudiants,pref_parcours,capacites) :
                    liste_instables.add((parcours_1,etudiant_2))
     return liste_instables
 
+#Q7
 def pref_alea_etudiants(n) :
     pref_etudiants = [rd.sample(range(9),9) for i in range(n)]
     return pref_etudiants
@@ -168,7 +169,148 @@ def pref_alea_etudiants(n) :
 def pref_alea_parcours(n) :  
     pref_parcours = [rd.sample(range(n),n) for i in range(9)] 
     return pref_parcours
-   
+
+
+def Borda_scores(pref) :
+    nb_colonnes = len(pref[0])
+    nb_lignes = len(pref)
+    classement = [[-1] * nb_colonnes for _ in range(nb_lignes)]
+
+    for i in range(nb_lignes):
+        for j in range(nb_colonnes):
+            idx_parcours = pref[i][j]
+            classement[i][idx_parcours] = nb_colonnes - (j + 1)  # Cast en entier si nécessaire 
+    return classement
+#Q12
+def fichier_lp_kpremiers(nom_fichier, pref_etudiants, pref_parcours, capacites, k=3):
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+    scores_etudiants = Borda_scores(pref_etudiants)
+    
+    with open(nom_fichier, "w") as f:
+        f.write("Maximize\n")
+        variables = [f"x{i}_{pref_etudiants[i][j]}" for i in range(nb_etudiants) for j in range(k)]
+        f.write(" + ".join(variables) + "\n")
+        f.write("Subject To\n")
+
+        for j in range(nb_parcours):
+            f.write(f"constr_capacite_{j}: ")
+            c = " + ".join([f"x{i}_{j}" for i in range(nb_etudiants) if scores_etudiants[i][j] >= (nb_parcours - k)])
+            if c:
+                f.write(c + f" <= {capacites[j]}\n")
+
+        for i in range(nb_etudiants):
+            f.write(f"constr_kpremiers_{i}: ")
+            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k)]) + " <= 1\n")
+
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(k):
+                f.write(f"x{i}_{pref_etudiants[i][j]} ")
+        f.write("\nEnd")
+
+#Q13
+def fichier_lp_equitable(nom_fichier, pref_etudiants, pref_parcours, capacites):
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+    
+    scores_etudiants = Borda_scores(pref_etudiants)
+    
+    with open(nom_fichier, "w") as f:
+        # Déclaration de l'objectif : maximiser z
+        f.write("Maximize\n")
+        f.write(" z\n")
+        
+        # Contraintes
+        f.write("Subject To\n")
+        
+        # Contrainte : z <= somme des utilités des étudiants
+        for i in range(nb_etudiants):
+            f.write(f" constr_utilite_etudiant_{i}: " + " + ".join([f"{scores_etudiants[i][j]} x{i}_{j}" for j in range(nb_parcours)]) + " - z >= 0\n")
+        
+        
+        # Contrainte : chaque étudiant est affecté à un seul parcours
+        for i in range(nb_etudiants):
+            f.write(f" constr_affectation_{i}: " + " + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + " = 1\n")
+        
+        # Contrainte : respect des capacités des parcours
+        for j in range(nb_parcours):
+            f.write(f" constr_capacite_{j}: " + " + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
+        
+        # Déclaration des variables binaires
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                f.write(f"x{i}_{j} ")
+        f.write("\n")
+        
+        
+        f.write("Generals\n")
+        f.write(" z\n")
+        
+        
+        f.write("End\n")
+
+#Q14
+def fichier_lp_efficace(nom_fichier, pref_etudiants, pref_parcours, capacites, k=3):
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+    scores_parcours = Borda_scores(pref_parcours)
+    scores_etudiants = Borda_scores(pref_etudiants)
+    
+    with open(nom_fichier, "w") as f:
+        f.write("Maximize\n")
+        variables = [f"{scores_etudiants[i][j] + scores_parcours[j][i]} x{i}_{j}" for i in range(nb_etudiants) for j in range(nb_parcours)]
+        f.write(" + ".join(variables) + "\n")
+        f.write("Subject To\n")
+
+        for i in range(nb_etudiants):
+            f.write(f"constr_affectation_{i}: ")
+            f.write(" + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + " <= 1\n")
+
+        for j in range(nb_parcours):
+            f.write(f"constr_capacite_{j}: ")
+            f.write(" + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
+
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                f.write(f"x{i}_{j} ")
+        f.write("\nEnd")
+
+#Q15
+def fichier_lp_kpremiers_efficace(nom_fichier, pref_etudiants, pref_parcours, capacites, k):
+    nb_etudiants = len(pref_etudiants)
+    nb_parcours = len(pref_parcours)
+    scores_parcours = Borda_scores(pref_parcours)
+    scores_etudiants = Borda_scores(pref_etudiants)
+    
+    with open(nom_fichier, "w") as f:
+        f.write("Maximize\n")
+        variables = [f"{scores_etudiants[i][j] + scores_parcours[j][i]} x{i}_{j}" for i in range(nb_etudiants) for j in range(nb_parcours)]
+        f.write(" + ".join(variables) + "\n")
+        f.write("Subject To\n")
+
+        for j in range(nb_parcours):
+            f.write(f"constr_capacite_{j}: ")
+            c = " + ".join([f"x{i}_{j}" for i in range(nb_etudiants) ])
+            if c:
+                f.write(c + f" <= {capacites[j]}\n")
+
+        for i in range(nb_etudiants):
+            f.write(f"constr_kpremiers_{i}: ")
+            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k)]) + " = 1\n")
+        
+        
+        f.write("Binary\n")
+        for i in range(nb_etudiants):
+            for j in range(nb_parcours):
+                f.write(f"x{i}_{j} ")
+        f.write("\n")
+        
+        f.write("End\n")
+
+#Q1
 print(lire_PrefEtu("./PrefEtu.txt"))
 print(lire_PrefSpe("./PrefSpe.txt"))
 
@@ -176,41 +318,30 @@ print(lire_PrefSpe("./PrefSpe.txt"))
 pref_etudiants,nb_etu = lire_PrefEtu("./PrefEtu.txt")
 pref_parcours, capacites = lire_PrefSpe("./PrefSpe.txt")
 
+#Q5 Test de l'algorithme
 # Conversion des préférences en noms pour l'algorithme
 etudiants = list(range(nb_etu))
 parcours = list(range(len(capacites)))
 
-
-
 # Capacités des parcours (dictionnaire)
 capacites_list = [capacites[i] for i in range(len(parcours))]
 
-
-# Test de l'algorithme
-resultat = gale_shapley_hopitaux_etudiants(
+affectations_cote_etudiant = gale_shapley_hopitaux_etudiants(
     etudiants,
     parcours,
     pref_etudiants,
     pref_parcours,
     capacites_list
 )
-resultat2 = gale_shapley_hopitaux_parcours(
+affectations_cote_parcours = gale_shapley_hopitaux_parcours(
     etudiants,
     parcours,
     pref_etudiants,
     pref_parcours,
     capacites_list
 )
-# Affichage du résultat
-print(resultat2)
-print(resultat)
 
-affectations_bis=[[3, 5], [4], [2], [8], [10], [1], [0], [7], [9, 6]]
-print("les paires instables retournées avec coté étudiant : ",paires_instables(resultat,pref_etudiants,pref_parcours,capacites))
-print("les paires instables retournées avec coté parcours : ",paires_instables(resultat2,pref_etudiants,pref_parcours,capacites))
-
-
-
+#Q8
 valeurs_X = []
 valeurs_Y = []
 valeurs_Y1 = []
@@ -259,153 +390,45 @@ plt.legend()
 plt.title("courbe des temps d'execution ")
 plt.show()
 
-def Borda_scores(pref) :
-    nb_colonnes = len(pref[0])
-    nb_lignes = len(pref)
-    classement = [[-1] * nb_colonnes for _ in range(nb_lignes)]
-
-    for i in range(nb_lignes):
-        for j in range(nb_colonnes):
-            idx_parcours = pref[i][j]
-            classement[i][idx_parcours] = nb_colonnes - (j + 1)  # Cast en entier si nécessaire 
-    return classement
-
-def fichier_lp_kpremiers(nom_fichier, pref_etudiants, pref_parcours, capacites, k=3):
-    nb_etudiants = len(pref_etudiants)
-    nb_parcours = len(pref_parcours)
-    scores_etudiants = Borda_scores(pref_etudiants)
-    
-    with open(nom_fichier, "w") as f:
-        f.write("Maximize\n")
-        variables = [f"x{i}_{pref_etudiants[i][j]}" for i in range(nb_etudiants) for j in range(k)]
-        f.write(" + ".join(variables) + "\n")
-        f.write("Subject To\n")
-
-        for j in range(nb_parcours):
-            f.write(f"constr_capacite_{j}: ")
-            c = " + ".join([f"x{i}_{j}" for i in range(nb_etudiants) if scores_etudiants[i][j] >= (nb_parcours - k)])
-            if c:
-                f.write(c + f" <= {capacites[j]}\n")
-
-        for i in range(nb_etudiants):
-            f.write(f"constr_kpremiers_{i}: ")
-            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k)]) + " <= 1\n")
-
-        f.write("Binary\n")
-        for i in range(nb_etudiants):
-            for j in range(k):
-                f.write(f"x{i}_{pref_etudiants[i][j]} ")
-        f.write("\nEnd")
-
-
-def fichier_lp_efficace(nom_fichier, pref_etudiants, pref_parcours, capacites, k=3):
-    nb_etudiants = len(pref_etudiants)
-    nb_parcours = len(pref_parcours)
-    scores_parcours = Borda_scores(pref_parcours)
-    scores_etudiants = Borda_scores(pref_etudiants)
-    
-    with open(nom_fichier, "w") as f:
-        f.write("Maximize\n")
-        variables = [f"{scores_etudiants[i][j] + scores_parcours[j][i]} x{i}_{j}" for i in range(nb_etudiants) for j in range(nb_parcours)]
-        f.write(" + ".join(variables) + "\n")
-        f.write("Subject To\n")
-
-        for i in range(nb_etudiants):
-            f.write(f"constr_affectation_{i}: ")
-            f.write(" + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + " <= 1\n")
-
-        for j in range(nb_parcours):
-            f.write(f"constr_capacite_{j}: ")
-            f.write(" + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
-
-        f.write("Binary\n")
-        for i in range(nb_etudiants):
-            for j in range(nb_parcours):
-                f.write(f"x{i}_{j} ")
-        f.write("\nEnd")
-
-
-def fichier_lp_equitable(nom_fichier, pref_etudiants, pref_parcours, capacites):
-    nb_etudiants = len(pref_etudiants)
-    nb_parcours = len(pref_parcours)
-    
-    scores_etudiants = Borda_scores(pref_etudiants)
-    
-    with open(nom_fichier, "w") as f:
-        # Déclaration de l'objectif : maximiser z
-        f.write("Maximize\n")
-        f.write(" z\n")
-        
-        # Contraintes
-        f.write("Subject To\n")
-        
-        # Contrainte : z <= somme des utilités des étudiants
-        for i in range(nb_etudiants):
-            f.write(f" constr_utilite_etudiant_{i}: " + " + ".join([f"{scores_etudiants[i][j]} x{i}_{j}" for j in range(nb_parcours)]) + " - z >= 0\n")
-        
-        
-        # Contrainte : chaque étudiant est affecté à un seul parcours
-        for i in range(nb_etudiants):
-            f.write(f" constr_affectation_{i}: " + " + ".join([f"x{i}_{j}" for j in range(nb_parcours)]) + " = 1\n")
-        
-        # Contrainte : respect des capacités des parcours
-        for j in range(nb_parcours):
-            f.write(f" constr_capacite_{j}: " + " + ".join([f"x{i}_{j}" for i in range(nb_etudiants)]) + f" <= {capacites[j]}\n")
-        
-        # Déclaration des variables binaires
-        f.write("Binary\n")
-        for i in range(nb_etudiants):
-            for j in range(nb_parcours):
-                f.write(f"x{i}_{j} ")
-        f.write("\n")
-        
-        # Déclaration de z comme variable continue
-        f.write("Generals\n")
-        f.write(" z\n")
-        
-        # Fin du fichier LP
-        f.write("End\n")
-
-
-def fichier_lp_kpremiers_efficace(nom_fichier, pref_etudiants, pref_parcours, capacites, k):
-    nb_etudiants = len(pref_etudiants)
-    nb_parcours = len(pref_parcours)
-    scores_parcours = Borda_scores(pref_parcours)
-    scores_etudiants = Borda_scores(pref_etudiants)
-    
-    with open(nom_fichier, "w") as f:
-        f.write("Maximize\n")
-        variables = [f"{scores_etudiants[i][j] + scores_parcours[j][i]} x{i}_{j}" for i in range(nb_etudiants) for j in range(nb_parcours)]
-        f.write(" + ".join(variables) + "\n")
-        f.write("Subject To\n")
-
-        for j in range(nb_parcours):
-            f.write(f"constr_capacite_{j}: ")
-            c = " + ".join([f"x{i}_{j}" for i in range(nb_etudiants) ])
-            if c:
-                f.write(c + f" <= {capacites[j]}\n")
-
-        for i in range(nb_etudiants):
-            f.write(f"constr_kpremiers_{i}: ")
-            f.write(" + ".join([f"x{i}_{pref_etudiants[i][j]}" for j in range(k)]) + " = 1\n")
-        
-        # Déclaration des variables binaires
-        f.write("Binary\n")
-        for i in range(nb_etudiants):
-            for j in range(nb_parcours):
-                f.write(f"x{i}_{j} ")
-        f.write("\n")
-        # Fin du fichier LP
-        f.write("End\n")
-
-
-
 # Appels avec noms de fichiers
-print(pref_etudiants)
-print(Borda_scores(pref_etudiants))
-print(pref_parcours)
-print(Borda_scores(pref_parcours))
 fichier_lp_kpremiers("probleme_kpremiers.lp", pref_etudiants, pref_parcours, capacites, 5)
 fichier_lp_efficace("probleme_efficace.lp", pref_etudiants, pref_parcours, capacites)
 fichier_lp_equitable("probleme_equitable.lp", pref_etudiants, pref_parcours, capacites)
 fichier_lp_kpremiers_efficace("kpremier_efficace.lp", pref_etudiants, pref_parcours, capacites, 5)
+
+def recuperer_affectations( nom_f, nb_etudiants=11, nb_parcours=9):
+    with open(nom_f ,"r") as f :
+        contenu = f.readlines() 
+        affectations = [[] for _ in range(nb_parcours)]
+        for i in range(1,len(contenu)) :
+            line = contenu[i].split()
+            if int(line[1]) == 1 :
+                var = line[0]
+                etudiant , parcours = map(int ,var[1:].split("_"))
+                affectations[parcours].append(etudiant)
+    return affectations
+
+affectations_14 = recuperer_affectations("probleme_efficace.sol")
+affectations_12 = recuperer_affectations("probleme_kpremiers.sol")
+affectations_13 = recuperer_affectations("probleme_equitable.sol")
+affectations_15 = recuperer_affectations("kpremier_efficace.sol")
+print(affectations_12)
+print(affectations_13)
+print(affectations_14)
+print(affectations_15)
+
+def utilite_minimale(affectations, scores):
+    utilites = [scores[etu][p] for p in range(len(affectations)) for etu in affectations[p]]
+    return min(utilites) if utilites else 0
+
+def utilite_moyenne(affectations, scores):
+    utilites = [scores[etu][p] for p in range(len(affectations)) for etu in affectations[p]]
+    return sum(utilites) / len(utilites) if utilites else 0
+scores_etudiants = Borda_scores(pref_etudiants)
+#scores_parcours = Borda_scores(pref_parcours)
+
+print(f"utilité minimale coté etudiant : {utilite_minimale(affectations_cote_etudiant,scores_etudiants)}",f" utilité moyenne coté étudiant : {utilite_moyenne(affectations_cote_etudiant, scores_etudiants)}",f"les paires instables : {paires_instables(affectations_cote_etudiant,pref_etudiants,pref_parcours,capacites)}")
+print(f"utilité minimale coté parcours : {utilite_minimale(affectations_cote_parcours,scores_etudiants)}",f" utilité moyenne coté parcours : {utilite_moyenne(affectations_cote_parcours, scores_etudiants)}",f"les paires instables : {paires_instables(affectations_cote_parcours,pref_etudiants,pref_parcours,capacites)}")
+print(f"utilité minimale q13 : {utilite_minimale(affectations_13,scores_etudiants)}",f" utilité moyenne Q13 : {utilite_moyenne(affectations_13,scores_etudiants)}",f"les paires insatbles : {paires_instables(affectations_13,pref_etudiants,pref_parcours,capacites)}")
+print(f"utilité minimale q14 : {utilite_minimale(affectations_14,scores_etudiants)}",f" utilité moyenne Q14 : {utilite_moyenne(affectations_14,scores_etudiants)}",f"les paires instables : {paires_instables(affectations_14,pref_etudiants,pref_parcours,capacites)}")
+print(f"utilité minimale q15 : {utilite_minimale(affectations_15,scores_etudiants)}",f" utilité moyenne Q15 : {utilite_moyenne(affectations_15,scores_etudiants)}",f"les paires instables : {paires_instables(affectations_15,pref_etudiants,pref_parcours,capacites)}")
