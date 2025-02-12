@@ -43,49 +43,53 @@ def lire_PrefSpe(name_f):
 
     return classement,capacites
 #Q3
+import heapq
+from collections import deque
+
 def gale_shapley_hopitaux_etudiants(etudiants, parcours, pref_etudiants, pref_parcours, capacites):
-    libres = list(etudiants)  # Pile pour les étudiants libres
-    propositions = [0] * len(etudiants)  # Index des prochaines propositions pour chaque étudiant
-    affectations = [[] for _ in parcours]  # Affectations courantes pour chaque parcours
+    libres = deque(etudiants)  # File des étudiants libres
+    propositions = [0] * len(etudiants)  # Nombre de propositions faites par chaque étudiant
+    affectations = [[] for _ in parcours]  # Affectations actuelles des étudiants aux parcours
+    tas_parcours = [[] for _ in parcours]  # Tas min pour gérer les affectations dans chaque parcours
 
     # Matrice de classement des étudiants dans les préférences des parcours
     classement_parcours = [[-1] * len(etudiants) for _ in range(len(parcours))]
     for i in range(len(parcours)):
-        for j in range(len(etudiants)):
-            etudiant = pref_parcours[i][j]
+        for j, etudiant in enumerate(pref_parcours[i]):
             classement_parcours[i][etudiant] = j  
 
-    def moins_prefere(idx_parcours):
-        """Retourne l'étudiant le moins préféré actuellement affecté au parcours donné."""
-        return max(affectations[idx_parcours], key=lambda etu: classement_parcours[idx_parcours][etu])
-
-    def mieux_classe(etu1, etu2, idx_parcours):
-        """Vérifie si etu1 est mieux classé que etu2 dans pref_parcours[idx_parcours]."""
-        return classement_parcours[idx_parcours][etu1] < classement_parcours[idx_parcours][etu2]
-
+    nb_it = 0
     while libres:
-        etudiant = libres.pop()  # Prendre un étudiant libre
+        nb_it += 1
+        etudiant = libres.popleft()  # Prendre un étudiant libre
 
-        choix_parcours = pref_etudiants[etudiant][propositions[etudiant]]  # Prochain parcours à proposer
-        propositions[etudiant] += 1  # Mise à jour de l'index de proposition
+        while propositions[etudiant] < len(pref_etudiants[etudiant]):  
+            choix_parcours = pref_etudiants[etudiant][propositions[etudiant]]  # Parcours ciblé
+            propositions[etudiant] += 1  # Mise à jour de l'index de proposition
 
-        if len(affectations[choix_parcours]) < capacites[choix_parcours]:
-            # Ajouter directement si le parcours n'est pas plein
-            affectations[choix_parcours].append(etudiant)
-        else:
-            # Comparer avec le moins préféré
-            etudiant_rejete = moins_prefere(choix_parcours)
-            if mieux_classe(etudiant, etudiant_rejete, choix_parcours):
-                # Remplacer le moins préféré
-                affectations[choix_parcours].remove(etudiant_rejete)
+            if len(affectations[choix_parcours]) < capacites[choix_parcours]:
+                # Le parcours a encore de la place → On ajoute directement
+                heapq.heappush(tas_parcours[choix_parcours], (-classement_parcours[choix_parcours][etudiant], etudiant))
                 affectations[choix_parcours].append(etudiant)
-                libres.append(etudiant_rejete)  # Remettre l'étudiant rejeté en libre
+                break
             else:
-                # Remettre l'étudiant libre
-                libres.append(etudiant)
+                # Vérifier le moins préféré dans le parcours
+                moins_pref = tas_parcours[choix_parcours][0][1]  # Premier élément du tas
+                if classement_parcours[choix_parcours][etudiant] < classement_parcours[choix_parcours][moins_pref]:
+                    # L'étudiant actuel est mieux classé → On le remplace
+                    affectations[choix_parcours].remove(moins_pref)
+                    affectations[choix_parcours].append(etudiant)
 
-    return affectations
+                    # Mise à jour du tas (on supprime sans le trier immédiatement)
+                    tas_parcours[choix_parcours][0] = (-classement_parcours[choix_parcours][etudiant], etudiant)
+                    heapq.heapify(tas_parcours[choix_parcours])  # Réorganiser le tas
 
+                    libres.append(moins_pref)  # L'étudiant rejeté devient libre
+                    break  # L'étudiant actuel est bien affecté
+                else:
+                    continue  # Essayer le prochain parcours
+
+    return affectations, nb_it
 #Q4
 def gale_shapley_hopitaux_parcours(etudiants, parcours, pref_etudiants, pref_parcours, capacites):
     libres = list(parcours)  # Pile pour les parcours libres
@@ -105,8 +109,9 @@ def gale_shapley_hopitaux_parcours(etudiants, parcours, pref_etudiants, pref_par
     def mieux_classe(p1, p2, etu):
         """Vérifie si p1 est mieux classé que p2 dans pref_etudiants[etu]."""
         return classement_etudiants[etu][p1] < classement_etudiants[etu][p2]
-
+    nb_it=0
     while libres:
+        nb_it+=1
         idx_parcours = libres.pop()  # Prendre un parcours libre
         if propositions[idx_parcours] >= len(pref_parcours[idx_parcours]):
             # Si le parcours a déjà proposé à tous les étudiants, on passe au suivant
@@ -137,7 +142,7 @@ def gale_shapley_hopitaux_parcours(etudiants, parcours, pref_etudiants, pref_par
     for etu, p in enumerate(affectations):
         resultat[p].append(etu)
 
-    return resultat
+    return resultat,nb_it
 #Q6
 def mieux_classe_e(e1, e2, p,pref_parcours ):
         """Vérifie si e1 est mieux classé que e2 dans pref_parcours[p]."""
@@ -326,14 +331,14 @@ parcours = list(range(len(capacites)))
 # Capacités des parcours (dictionnaire)
 capacites_list = [capacites[i] for i in range(len(parcours))]
 
-affectations_cote_etudiant = gale_shapley_hopitaux_etudiants(
+affectations_cote_etudiant,nb = gale_shapley_hopitaux_etudiants(
     etudiants,
     parcours,
     pref_etudiants,
     pref_parcours,
     capacites_list
 )
-affectations_cote_parcours = gale_shapley_hopitaux_parcours(
+affectations_cote_parcours,nb = gale_shapley_hopitaux_parcours(
     etudiants,
     parcours,
     pref_etudiants,
@@ -345,10 +350,14 @@ affectations_cote_parcours = gale_shapley_hopitaux_parcours(
 valeurs_X = []
 valeurs_Y = []
 valeurs_Y1 = []
+nb_it_1=[]
+nb_it_2=[]
 for i in range(200,2001,200):
     valeurs_X.append(i)
     tab=[]
     tab1=[]
+    tab_it1=[]
+    tab_it2=[]
     for j in range(10):
         p = pref_alea_parcours(i)
         e = pref_alea_etudiants(i)
@@ -364,14 +373,16 @@ for i in range(200,2001,200):
             capacites_list[j] += 1
     
         start_time = time.process_time()
-        gale_shapley_hopitaux_etudiants(etudiants, parcours,e, p,capacites_list)
+        _,it1=gale_shapley_hopitaux_etudiants(etudiants, parcours,e, p,capacites_list)
         end_start=time.process_time()
         tab.append(end_start-start_time)
+        tab_it1.append(it1)
 
         start_time1 =time.process_time()
-        gale_shapley_hopitaux_parcours(etudiants, parcours,e, p,capacites_list)
+        _,it2=gale_shapley_hopitaux_parcours(etudiants, parcours,e, p,capacites_list)
         end_start1 = time.process_time()
         tab1.append(end_start1-start_time1)
+        tab_it2.append(it2)
 
     moy = np.mean(np.array(tab))
     valeurs_Y.append(moy)
@@ -380,7 +391,12 @@ for i in range(200,2001,200):
     valeurs_Y1.append(moy1)
     print("Pour n = ",i," le temps moyen est de : ",moy1 )
 
+    moy_it1=np.mean(np.array(tab_it1))
+    nb_it_1.append(moy_it1)
+    moy_it2=np.mean(np.array(tab_it2))
+    nb_it_2.append(moy_it2)
     
+
 
 plt.plot(valeurs_X,valeurs_Y,label="côté étudiant", color="red")
 plt.plot(valeurs_X,valeurs_Y1,label="côté parcours", color="blue")
@@ -390,6 +406,13 @@ plt.legend()
 plt.title("courbe des temps d'execution ")
 plt.show()
 
+plt.plot(valeurs_X,nb_it_1,label="côté étudiant", color="red")
+plt.plot(valeurs_X,nb_it_2,label="côté parcours", color="blue")
+plt.xlabel("nb étudiants")
+plt.ylabel("nb itérations")
+plt.legend()
+plt.title("courbe du nombre d'itérations ")
+plt.show()
 # Appels avec noms de fichiers
 fichier_lp_kpremiers("probleme_kpremiers.lp", pref_etudiants, pref_parcours, capacites, 5)
 fichier_lp_efficace("probleme_efficace.lp", pref_etudiants, pref_parcours, capacites)
