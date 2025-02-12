@@ -408,14 +408,16 @@ def recuperer_affectations( nom_f, nb_etudiants=11, nb_parcours=9):
                 affectations[parcours].append(etudiant)
     return affectations
 
+print("affectations coté étudiant : ",affectations_cote_etudiant)
+print("affectations coté parcours : ",affectations_cote_parcours)
 affectations_14 = recuperer_affectations("probleme_efficace.sol")
 affectations_12 = recuperer_affectations("probleme_kpremiers.sol")
 affectations_13 = recuperer_affectations("probleme_equitable.sol")
 affectations_15 = recuperer_affectations("kpremier_efficace.sol")
-print(affectations_12)
-print(affectations_13)
-print(affectations_14)
-print(affectations_15)
+print("affectation12 : ",affectations_12)
+print("affectation13 : ",affectations_13)
+print("affectation14 : ",affectations_14)
+print("affectation15 : ",affectations_15)
 
 def utilite_minimale(affectations, scores):
     utilites = [scores[etu][p] for p in range(len(affectations)) for etu in affectations[p]]
