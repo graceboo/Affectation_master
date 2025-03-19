@@ -47,7 +47,7 @@ import heapq
 from collections import deque
 
 def gale_shapley_hopitaux_etudiants(etudiants, parcours, pref_etudiants, pref_parcours, capacites):
-    libres = deque(etudiants)  # File des étudiants libres
+    libres = deque(etudiants)  # Pile des étudiants libres
     propositions = [0] * len(etudiants)  # Nombre de propositions faites par chaque étudiant
     affectations = [[] for _ in parcours]  # Affectations actuelles des étudiants aux parcours
     tas_parcours = [[] for _ in parcours]  # Tas min pour gérer les affectations dans chaque parcours
@@ -68,7 +68,7 @@ def gale_shapley_hopitaux_etudiants(etudiants, parcours, pref_etudiants, pref_pa
             propositions[etudiant] += 1  # Mise à jour de l'index de proposition
 
             if len(affectations[choix_parcours]) < capacites[choix_parcours]:
-                # Le parcours a encore de la place → On ajoute directement
+                # Le parcours a encore de la place On ajoute directement
                 heapq.heappush(tas_parcours[choix_parcours], (-classement_parcours[choix_parcours][etudiant], etudiant))
                 affectations[choix_parcours].append(etudiant)
                 break
@@ -450,7 +450,6 @@ def utilite_moyenne(affectations, scores):
     utilites = [scores[etu][p] for p in range(len(affectations)) for etu in affectations[p]]
     return sum(utilites) / len(utilites) if utilites else 0
 scores_etudiants = Borda_scores(pref_etudiants)
-#scores_parcours = Borda_scores(pref_parcours)
 
 print(f"utilité minimale coté etudiant : {utilite_minimale(affectations_cote_etudiant,scores_etudiants)}",f" utilité moyenne coté étudiant : {utilite_moyenne(affectations_cote_etudiant, scores_etudiants)}",f"les paires instables : {paires_instables(affectations_cote_etudiant,pref_etudiants,pref_parcours,capacites)}")
 print(f"utilité minimale coté parcours : {utilite_minimale(affectations_cote_parcours,scores_etudiants)}",f" utilité moyenne coté parcours : {utilite_moyenne(affectations_cote_parcours, scores_etudiants)}",f"les paires instables : {paires_instables(affectations_cote_parcours,pref_etudiants,pref_parcours,capacites)}")
